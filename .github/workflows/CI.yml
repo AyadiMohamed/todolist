@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: main
+
+jobs:
+ continuous-integration :
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+
+      - name: Set up .Net build env 
+        uses: actions/setup-dotnet@v2
+        with:
+            dotnet-version: '8.0.x'
+            include-prerelease: true
+
+      - name: Restore dependencies 
+        run: dotnet restore
+
+      - name: Build api 
+        run: dotnet build -c Release --no-restore src/TodoList.HttpApi.Host/*.csproj
+
+      - name: Publish api 🤏
+        run: dotnet publish -c release -o ./out src/TodoList.HttpApi.Host/*.csproj
