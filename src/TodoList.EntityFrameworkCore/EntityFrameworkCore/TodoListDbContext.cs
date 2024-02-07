@@ -25,7 +25,7 @@ public class TodoListDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-    public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<Task> TodoItems { get; set; }
 
     #region Entities from the modules
 
@@ -84,6 +84,6 @@ public class TodoListDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-        builder.Entity<TodoItem>(b => b.ToTable("TodoItems"));
+        builder.Entity<Task>(b => b.ToTable("TodoItems"));
     }
 }
