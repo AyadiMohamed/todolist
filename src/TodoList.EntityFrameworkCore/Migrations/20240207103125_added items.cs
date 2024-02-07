@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TodoList.Migrations
 {
     /// <inheritdoc />
-    public partial class Added_TodoItem : Migration
+    public partial class addeditems : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

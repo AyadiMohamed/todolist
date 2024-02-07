@@ -9,6 +9,6 @@ namespace TodoList.Entities
 {
     public class TodoItem : BasicAggregateRoot<Guid>
     {
-        public string? item { get; set; }
+        public string item { get; set; }
     }
 }
