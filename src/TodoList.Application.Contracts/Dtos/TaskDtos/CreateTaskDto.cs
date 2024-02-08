@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Volo.Abp.Application.Dtos;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
-namespace TodoList.Dtos
+namespace TodoList.Dtos.TaskDtos
 {
-    public class Task : AuditedEntityDto<Guid>
+    public class CreateTaskDto : AuditedEntityDto<Guid>
     {
-      
         [Required]
         [StringLength(100)]
         public string Title { get; set; }
@@ -22,8 +20,27 @@ namespace TodoList.Dtos
 
         public bool Completed { get; set; }
 
-        // Foreign key for the associated user
-        [Required]
-        public int UserId { get; set; }
+        
+        private Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public string UserEmail { get; set; }
+
+
+        public void SetUserId(Guid userId)
+        {
+            this.UserId = userId;
+        }
+
+        public Guid GetUserId()
+        {
+            return this.UserId;
+        }
+
+      
+
+
+
+
     }
 }
+

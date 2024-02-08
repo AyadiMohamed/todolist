@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TodoList.Entities;
+using TodoList.Entities.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -25,7 +25,7 @@ public class TodoListDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-    public DbSet<Task> TodoItems { get; set; }
+    public DbSet<task> TodoItems { get; set; }
 
     #region Entities from the modules
 
@@ -84,6 +84,6 @@ public class TodoListDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-        builder.Entity<Task>(b => b.ToTable("TodoItems"));
+        builder.Entity<task>(b => b.ToTable("TodoItems"));
     }
 }

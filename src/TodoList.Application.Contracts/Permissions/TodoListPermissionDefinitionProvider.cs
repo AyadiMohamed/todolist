@@ -9,8 +9,12 @@ public class TodoListPermissionDefinitionProvider : PermissionDefinitionProvider
     public override void Define(IPermissionDefinitionContext context)
     {
         var myGroup = context.AddGroup(TodoListPermissions.GroupName);
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(TodoListPermissions.MyPermission1, L("Permission:MyPermission1"));
+        var taskPermission = myGroup.AddPermission(TodoListPermissions.TodoListTasks.Default, L("Permission:Tasks"));
+        taskPermission.AddChild(TodoListPermissions.TodoListTasks.Create, L("Permission:Tasks.Create"));
+        taskPermission.AddChild(TodoListPermissions.TodoListTasks.Update, L("Permission:Tasks.Update"));
+        taskPermission.AddChild(TodoListPermissions.TodoListTasks.Delete, L("Permission:Tasks.Delete"));
+        taskPermission.AddChild(TodoListPermissions.TodoListTasks.Read, L("Permission:Tasks.Read"));
+
     }
 
     private static LocalizableString L(string name)
