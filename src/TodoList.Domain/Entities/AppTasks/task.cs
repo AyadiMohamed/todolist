@@ -13,17 +13,15 @@ namespace TodoList.Entities.Tasks
         public DateTime DueDate { get; set; }
         public bool Completed { get; set; } = false;
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserEmail { get; set; }
+        public Guid MemberId { get; set; }
 
-        public task(string title , string description , DateTime dueDate , bool completed , Guid userId, string userName, string userEmail) {
+        public task(string title , string description , DateTime dueDate , bool completed , Guid userId, Guid memberId) {
             this.Title = title;
             this.Description = description;
             this.DueDate = dueDate;
             this.Completed = completed;
             this.UserId = userId;
-            this.UserName = userName;
-            this.UserEmail = userEmail;
+            this.MemberId = memberId;
         } 
     }
 

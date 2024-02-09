@@ -9,6 +9,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp;
+using TodoList.Entities.Members;
+using System.Collections.Generic;
 
 
 
@@ -22,20 +24,22 @@ namespace TodoList.Tasks
                                                    PagedAndSortedResultRequestDto,
                                                    CreateTaskDto,
                                                    UpdateTaskDto>
+
     {
-        private IdentityUserManager _userManager;
-        private IdentityRoleManager _roleManager;
-        public TaskApplicationService(IRepository<task, Guid> repository, IdentityRoleManager roleManager, IdentityUserManager userManager) : base(repository)
+        private IRepository<Member, Guid> _memberRepository;
+        public TaskApplicationService(IRepository<task, Guid> repository, IRepository<Member, Guid> memberRepository) : base(repository)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _memberRepository = memberRepository;
         }
 
         #region GetAsync
         [Authorize(TodoListPermissions.TodoListTasks.Read)]
         public override async Task<TaskDto> GetAsync(Guid id)
         {
-            var result = await base.GetAsync(id);
+            var entity = await this.Repository.GetAsync(id);
+            if (entity == null)
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND), id.ToString());
+            var result = await MapToGetOutputDtoAsync(entity);
             return result;
         }
         #endregion
@@ -44,8 +48,14 @@ namespace TodoList.Tasks
         [Authorize(TodoListPermissions.TodoListTasks.Read)]
         public override async Task<PagedResultDto<TaskDtoListing>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
-            var result = await base.GetListAsync(input);
-            return result;
+            var query = await this.Repository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, true);
+            var totalCount = await this.Repository.CountAsync();
+            var entityDtos = new List<TaskDtoListing>();
+            if (totalCount > 0)
+            {
+                entityDtos = await MapToGetListOutputDtosAsync(query);
+            }
+            return new PagedResultDto<TaskDtoListing>(totalCount, entityDtos);
         }
         #endregion
 
@@ -54,26 +64,25 @@ namespace TodoList.Tasks
         /// BeforeCreateAsync : Handling the verification before creating new task
         /// and creating the user related to that task
         /// </summary>
-        private async Task<Guid> BeforeCreateAsync(CreateTaskDto input)
+        private async Task BeforeCreateAsync(CreateTaskDto input)
         {
-            // task existins verification
-            var task = await this.Repository.FirstOrDefaultAsync(m => m.Title == input.Title);
-            if (task != null)
-                throw new UserFriendlyException("Task Already exits");
+            //memberId verification
+            if (!input.MemberId.HasValue)
+            {
+                input.MemberId = this.CurrentUser.Id;
+            }
+            else
+            {
+                //role verification
+                if (!this.CurrentUser.IsInRole(TodoListConsts.AdminRole))
+                    throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER);
+                // member verfication
+                var member = await _memberRepository.FirstOrDefaultAsync(x => x.UserId == input.MemberId);
+                if (member == null)
+                    throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
 
-            //user creation
-
-            var user = new IdentityUser(GuidGenerator.Create(), input.UserName, input.UserEmail);
-            var createUserResult = await _userManager.CreateAsync(user);
-            if (!createUserResult.Succeeded)
-                throw new UserFriendlyException("User Already exits");
-            var roleExist = await _roleManager.RoleExistsAsync("User");
-            if (!roleExist)
-                await _roleManager.CreateAsync(new IdentityRole(GuidGenerator.Create(), "User"));
-            await _userManager.AddToRoleAsync(user, "User");
-            await _userManager.AddPasswordAsync(user, "P@ssw0rd**");
-            return user.Id;
-        
+                input.SetUserId(member.UserId);
+            }
         }
         /// <summary>
         /// CreateAsync :Handel the creation of the task and calls the befor and after function
@@ -83,8 +92,7 @@ namespace TodoList.Tasks
         [Authorize(TodoListPermissions.TodoListTasks.Create)]
         public override async Task<TaskDto> CreateAsync(CreateTaskDto input)
         {
-            var userId = await this.BeforeCreateAsync(input);
-            input.SetUserId(userId);
+            await this.BeforeCreateAsync(input);
             var result = await base.CreateAsync(input);
             return result;
         }
@@ -97,12 +105,12 @@ namespace TodoList.Tasks
         /// </summary>
         /// <param name="input">UpdateTaskDto</param>
         /// <returns>task: the exsiting task in database </returns>
-        public async Task<task> BeforeUpdateAsync(UpdateTaskDto input)
+        private async Task BeforeUpdateAsync(UpdateTaskDto input)
         {
-            var task = await this.Repository.FindAsync(input.Id);
-            if (task == null)
-                throw new UserFriendlyException("task do not exits");
-            return task;
+            // member verfication
+            var member = await _memberRepository.FirstOrDefaultAsync(x => x.UserId == input.MemberId);
+            if (member == null)
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
 
         }
 
@@ -112,29 +120,12 @@ namespace TodoList.Tasks
         /// <param name="id" >Guid:task Id</param>
         /// <param name="input" >UpdateTaskDto</param>
         /// <returns>taskDto</returns>
-        public override async Task<TaskDto> UpdateAsync(Guid id , UpdateTaskDto input) {
-            var oldTask = await this.BeforeUpdateAsync(input);
-            var oldUserName = oldTask.UserName;
-            var oldUserEmail = oldTask.UserEmail;
-            var result = await base.UpdateAsync(id, input);
-            await this.AfterUpdateAsync(result, oldUserName , oldUserEmail);
-            return result;
-        }
-        ///<summary>
-        /// AfterUpdateAsync :Handel the needed operation after updating the task 
-        /// updatig  email and username in user table if the userName in task and mail are changed
-        ///</summary>
-        ///<param name="input"> TaskDto</param>
-        ///<param name="oldUserEmail">the old mail of the user</param>
-        /// <returns></returns>
-        public async Task AfterUpdateAsync(TaskDto input, string OldUserName, string OldUserEmail)
+        [Authorize(TodoListPermissions.TodoListTasks.Update)]
+        public override async Task<TaskDto> UpdateAsync(Guid id, UpdateTaskDto input)
         {
-            if (input.UserName != OldUserName && input.UserEmail != OldUserEmail)
-            {
-                var relatedUser = await _userManager.FindByIdAsync(input.UserId.ToString());
-                await _userManager.SetEmailAsync(relatedUser, input.UserEmail);
-                await _userManager.SetUserNameAsync(relatedUser, input.UserName);
-            }
+            await this.BeforeUpdateAsync(input);
+            var result = await base.UpdateAsync(id, input);
+            return result;
         }
         #endregion
 
@@ -148,7 +139,7 @@ namespace TodoList.Tasks
         {
             var task = await this.Repository.FindAsync(m => m.Id == id);
             if (task == null)
-                throw new UserFriendlyException("task do not exits");
+                throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND);
             return task;
         }
         /// <summary>
@@ -160,20 +151,27 @@ namespace TodoList.Tasks
         {
             var task = await this.BeforeDeleteAsync(id);
             await base.DeleteAsync(id);
-            await this.AfterDeleteAsync(task.UserId);
-        }
-        ///<summary>
-        /// AfterDeleteAsync :Handel the needed operation after deleting the task
-        /// deleting  the user related to the task from user table 
-        ///</summary>
-        ///<param name="userId"> Guid :realted member userId</param>
-        /// <returns></returns>
-        private async Task AfterDeleteAsync(Guid userId)
-        {
-            var relatedUser = await _userManager.GetByIdAsync(userId);
-            await _userManager.DeleteAsync(relatedUser);
         }
         #endregion
+
+        #region MarkAsCompleted
+        /// <summary>
+        /// DeleteAsync :Change the completed property of a task
+        /// </summary>
+        /// <param name="id" >Guid:task Id</param>
+        /// <returns></returns>
+        public async Task MarkAsCompleted(Guid id)
+        {
+            var task = await this.Repository.FindAsync(m => m.Id == id);
+            //role verification
+            if (!this.CurrentUser.IsInRole(TodoListConsts.AdminRole))
+                throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER);
+            if (task == null)
+                throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND);
+            task.Completed = true;
+        }
+        #endregion
+
 
     }
 }

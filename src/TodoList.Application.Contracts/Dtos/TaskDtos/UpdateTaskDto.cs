@@ -22,8 +22,7 @@ namespace TodoList.Dtos.TaskDtos
 
 
         private Guid UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserEmail { get; set; }
+        public Guid? MemberId { get; set; }
 
 
         public void SetUserId(Guid userId)

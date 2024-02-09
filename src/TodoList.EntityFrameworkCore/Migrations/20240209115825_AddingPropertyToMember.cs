@@ -5,21 +5,14 @@
 namespace TodoList.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingNewProperty : Migration
+    public partial class AddingPropertyToMember : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "UserEmail",
-                table: "TodoItems",
-                type: "longtext",
-                nullable: false)
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserName",
-                table: "TodoItems",
+                name: "MemberEmail",
+                table: "Members",
                 type: "longtext",
                 nullable: false)
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -29,12 +22,8 @@ namespace TodoList.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "UserEmail",
-                table: "TodoItems");
-
-            migrationBuilder.DropColumn(
-                name: "UserName",
-                table: "TodoItems");
+                name: "MemberEmail",
+                table: "Members");
         }
     }
 }

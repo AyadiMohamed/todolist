@@ -9,7 +9,13 @@
       "Permission:Tasks.Create": "Create Task",
       "Permission:Tasks.Update": "Update Task",
       "Permission:Tasks.Delete": "Delete Task",
-      "Permission:Tasks.Read": "Read Task"
+      "Permission:Tasks.Read": "Read Task",
+
+      "Permission:Members": "Members",
+      "Permission:Members.Create": "Create Member",
+      "Permission:Members.Update": "Update Member",
+      "Permission:Members.Delete": "Delete Member",
+      "Permission:Members.Read": "Read Member"
     }
   }
 
