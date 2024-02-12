@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
@@ -12,7 +15,7 @@ namespace TodoList.Data
     public class RoleDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
         //data seeder order
-        public int Order => 2;
+        public int Order => 1;
 
         private IdentityRoleManager _roleManager;
         private readonly IConfiguration _configuration;
@@ -35,7 +38,7 @@ namespace TodoList.Data
             var adminRoleExist = await _roleManager.RoleExistsAsync("admin");
             if (!adminRoleExist)
             {
-                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin"));
+                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin", context.TenantId));
             }
             // member role 
             var roleName = _configuration.GetSection("Roles:Member")["RoleName"];
@@ -44,7 +47,7 @@ namespace TodoList.Data
                 var roleExist = await _roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), roleName));
+                    await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), roleName, context.TenantId));
                 }
             }
 

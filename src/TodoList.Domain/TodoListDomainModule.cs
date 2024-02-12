@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TodoList.MultiTenancy;
 using Volo.Abp.AuditLogging;
@@ -14,6 +14,7 @@ using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.OpenIddict;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using EmailSender;
 
 namespace TodoList;
 
@@ -30,7 +31,8 @@ namespace TodoList;
     typeof(AbpTenantManagementDomainModule),
     typeof(AbpEmailingModule)
 )]
-public class TodoListDomainModule : AbpModule
+[DependsOn(typeof(EmailSenderDomainModule))]
+    public class TodoListDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

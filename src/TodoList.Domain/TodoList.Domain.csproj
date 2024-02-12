@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TodoList.Domain.Shared\TodoList.Domain.Shared.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\EmailSender\src\EmailSender.Domain\EmailSender.Domain.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.Emailing" Version="8.0.2" />

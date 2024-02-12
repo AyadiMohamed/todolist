@@ -1,49 +1,43 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using TodoList.Permissions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.PermissionManagement;
-using Volo.Abp.TenantManagement;
 
 namespace TodoList.Data
 {
-    public class PermissionDataSeedContributor : IDataSeedContributor, ITransientDependency
+    public class TodoListPermissionDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
-        private IdentityRoleManager _roleManager;
+
+        private readonly IdentityRoleManager _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IPermissionDefinitionManager _permissionDefinitionManager;
+        private readonly IPermissionDataSeeder _permissionDataSeeder;
 
-        protected IPermissionDefinitionManager _permissionDefinitionManager;
-        protected IPermissionDataSeeder _permissionDataSeeder;
-
-
-
-        public PermissionDataSeedContributor(
+        public TodoListPermissionDataSeedContributor(
             IdentityRoleManager roleManager,
             IConfiguration configuration,
             IPermissionDefinitionManager permissionDefinitionManager,
-            IPermissionDataSeeder permissionDataSeeder
-           )
+            IPermissionDataSeeder permissionDataSeeder)
         {
             _roleManager = roleManager;
             _configuration = configuration;
             _permissionDefinitionManager = permissionDefinitionManager;
             _permissionDataSeeder = permissionDataSeeder;
-
         }
 
-        public virtual async Task SeedAsync(DataSeedContext context)
+        public async Task SeedAsync(DataSeedContext context)
         {
-            await this.SeedMembersPermissionsAsync(context);
+            await SeedTodoListPermissionsAsync(context);
         }
 
-        public async Task SeedMembersPermissionsAsync(DataSeedContext context)
+        private async Task SeedTodoListPermissionsAsync(DataSeedContext context)
         {
             var roleName = _configuration.GetSection("Roles:Member")["RoleName"];
             if (!roleName.IsNullOrWhiteSpace())
@@ -56,16 +50,20 @@ namespace TodoList.Data
 
                 var permissionNames = new List<string>
                 {
-                    "TodoListTasks.Create",
-                    "TodoListTasks.Update",
-                    "TodoListTasks.Delete",
-                    "TodoListTasks.Read",
-
+                    // Add your TodoList permission names here
+                    TodoListPermissions.TodoListTasks.Default,
+                    TodoListPermissions.TodoListTasks.Create,
+                    TodoListPermissions.TodoListTasks.Update,
+                    TodoListPermissions.TodoListTasks.Delete,
+                    TodoListPermissions.TodoListTasks.Read,
+                    TodoListPermissions.TodoListMembers.Default,
+                    TodoListPermissions.TodoListMembers.Create,
+                    TodoListPermissions.TodoListMembers.Update,
+                    TodoListPermissions.TodoListMembers.Delete,
+                    TodoListPermissions.TodoListMembers.Read
                 };
 
-                await _permissionDataSeeder.SeedAsync(RolePermissionValueProvider.ProviderName,
-                     roleName, permissionNames);
-
+                await _permissionDataSeeder.SeedAsync(RolePermissionValueProvider.ProviderName, roleName, permissionNames);
             }
         }
     }

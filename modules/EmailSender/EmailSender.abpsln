@@ -1,0 +1,7 @@
+{
+  "modules": {
+    "EmailSender": {
+      "path": "EmailSender.abpmdl"
+    }
+  }
+}

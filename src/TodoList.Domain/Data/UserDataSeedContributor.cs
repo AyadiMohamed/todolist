@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
 using System.Threading.Tasks;
 using TodoList.Entities.Members;
 using Volo.Abp.Data;
@@ -8,80 +7,81 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.Uow;
-using AbpTenant = Volo.Abp.TenantManagement.Tenant;
 
 namespace TodoList.Data
 {
-    public class UserDataSeedContributor : ITransientDependency
+    public class UserDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
-        //data seeder order
-        public int Order => 3;
+        public int Order => 2;
 
         private readonly IConfiguration _configuration;
-        private readonly IRepository<AbpTenant> _tenantRepository;
-        private IdentityUserManager _userManager;
-        private IdentityRoleManager _roleManager;
-        private IRepository<Member> _memberRepository;
-        public UserDataSeedContributor(IConfiguration configuration,
-                                           IRepository<AbpTenant> tenantRepository,
-                                           IdentityUserManager userManager,
-                                           IdentityRoleManager roleManager,
-                                           IRepository<Member> memberRepository)
+        private readonly IdentityUserManager _userManager;
+        private readonly IdentityRoleManager _roleManager;
+        private readonly IRepository<Member> _memberRepository;
+
+        public UserDataSeedContributor(
+            IConfiguration configuration,
+            IdentityUserManager userManager,
+            IdentityRoleManager roleManager,
+            IRepository<Member> memberRepository)
         {
             _configuration = configuration;
-            _tenantRepository = tenantRepository;
             _userManager = userManager;
             _roleManager = roleManager;
             _memberRepository = memberRepository;
         }
+
         [UnitOfWork]
         public async Task SeedAsync(DataSeedContext context)
         {
-
-            await CreateUserAsync();
-
+            await SeedUserAndRoleAsync();
         }
 
-        private async Task CreateUserAsync()
+        private async Task SeedUserAndRoleAsync()
         {
-
-
-            var roleExist = await _roleManager.RoleExistsAsync("admin");
-            if (!roleExist)
+            var adminRoleName = _configuration["Users:Roles:Admin:RoleName"];
+            var adminRoleExist = await _roleManager.FindByNameAsync(adminRoleName);
+            if (adminRoleExist == null)
             {
-                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin"));
+                var adminRole = new IdentityRole(SimpleGuidGenerator.Instance.Create(), adminRoleName);
+                await _roleManager.CreateAsync(adminRole);
             }
-            // default teant user
-            var defaultUserEmail = _configuration.GetSection("Users:DefaultUser")["Email"];
-            var userExist = await _userManager.FindByEmailAsync(defaultUserEmail);
-            if (!defaultUserEmail.IsNullOrWhiteSpace() && userExist == null)
+
+            var defaultUserEmail = _configuration["Users:DefaultUser:Email"];
+            if (!string.IsNullOrWhiteSpace(defaultUserEmail))
             {
-                var defaultUserPassword = _configuration.GetSection("Users:DefaultUser")["Password"];
-                var defaultUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), defaultUserEmail, defaultUserEmail);
-                await _userManager.CreateAsync(defaultUser, defaultUserPassword);
-                await _userManager.AddToRoleAsync(defaultUser, "admin");
-                // default user member
-                var defaultUserName = _configuration.GetSection("Users:DefaultUser")["Name"];
-                var defaultUserMember = new Member(defaultUserName, defaultUserEmail, defaultUser.Id);
-                await _memberRepository.InsertAsync(defaultUserMember);
+                var userExist = await _userManager.FindByEmailAsync(defaultUserEmail);
+                if (userExist == null)
+                {
+                    var defaultUserPassword = _configuration["Users:DefaultUser:Password"];
+                    var defaultUserName = _configuration["Users:DefaultUser:Name"];
+
+                    var defaultUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), defaultUserEmail, defaultUserEmail);
+                    await _userManager.CreateAsync(defaultUser, defaultUserPassword);
+                    await _userManager.AddToRoleAsync(defaultUser, adminRoleName);
+
+                    var defaultUserMember = new Member(defaultUserName, defaultUserEmail, defaultUser.Id);
+                    await _memberRepository.InsertAsync(defaultUserMember);
+                }
             }
-            // Second  user
-            var secondUserEmail = _configuration.GetSection("SecondUser")["Email"];
-            var secondUserExist = await _userManager.FindByEmailAsync(secondUserEmail);
-            if (!secondUserEmail.IsNullOrWhiteSpace() && secondUserExist == null)
+
+            var secondUserEmail = _configuration["Users:SecondUser:Email"];
+            if (!string.IsNullOrWhiteSpace(secondUserEmail))
             {
-                var secondUserPassword = _configuration.GetSection("Users:SecondUser")["Password"];
-                var secondUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), secondUserEmail, secondUserEmail);
-                await _userManager.CreateAsync(secondUser, secondUserPassword);
-                await _userManager.AddToRoleAsync(secondUser, "admin");
-                // Second user member
-                var secondUserName = _configuration.GetSection("Users:SecondUser")["Name"];
-                var secondUserMember = new Member(secondUserName, secondUserEmail, secondUser.Id);
-                await _memberRepository.InsertAsync(secondUserMember);
+                var secondUserExist = await _userManager.FindByEmailAsync(secondUserEmail);
+                if (secondUserExist == null)
+                {
+                    var secondUserPassword = _configuration["Users:SecondUser:Password"];
+                    var secondUserName = _configuration["Users:SecondUser:Name"];
+
+                    var secondUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), secondUserEmail, secondUserEmail);
+                    await _userManager.CreateAsync(secondUser, secondUserPassword);
+                    await _userManager.AddToRoleAsync(secondUser, adminRoleName);
+
+                    var secondUserMember = new Member(secondUserName, secondUserEmail, secondUser.Id);
+                    await _memberRepository.InsertAsync(secondUserMember);
+                }
             }
         }
     }
-
 }
-    
-

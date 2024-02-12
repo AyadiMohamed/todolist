@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TodoList.Application.Contracts\TodoList.Application.Contracts.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\EmailSender\src\EmailSender.HttpApi\EmailSender.HttpApi.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.Account.HttpApi" Version="8.0.2" />

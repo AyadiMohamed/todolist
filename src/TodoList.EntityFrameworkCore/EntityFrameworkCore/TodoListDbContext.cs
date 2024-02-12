@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TodoList.Entities.Members;
 using TodoList.Entities.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -15,6 +15,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using EmailSender.EntityFrameworkCore;
 
 namespace TodoList.EntityFrameworkCore;
 
@@ -95,5 +96,6 @@ public class TodoListDbContext :
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(t => t.UserId);
             b.HasOne<task>().WithMany().HasForeignKey(t => t.Id);
         });
-    }
+        builder.ConfigureEmailSender();
+        }
 }

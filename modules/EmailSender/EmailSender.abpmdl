@@ -1,0 +1,111 @@
+{
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {},
+      "host": {}
+    }
+  },
+  "packages": {
+    "EmailSender.Domain.Shared": {
+      "path": "src/EmailSender.Domain.Shared/EmailSender.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Domain": {
+      "path": "src/EmailSender.Domain/EmailSender.Domain.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Application.Contracts": {
+      "path": "src/EmailSender.Application.Contracts/EmailSender.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Application": {
+      "path": "src/EmailSender.Application/EmailSender.Application.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.EntityFrameworkCore": {
+      "path": "src/EmailSender.EntityFrameworkCore/EmailSender.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.MongoDB": {
+      "path": "src/EmailSender.MongoDB/EmailSender.MongoDB.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.HttpApi": {
+      "path": "src/EmailSender.HttpApi/EmailSender.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.HttpApi.Client": {
+      "path": "src/EmailSender.HttpApi.Client/EmailSender.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.TestBase": {
+      "path": "test/EmailSender.TestBase/EmailSender.TestBase.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.EntityFrameworkCore.Tests": {
+      "path": "test/EmailSender.EntityFrameworkCore.Tests/EmailSender.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.MongoDB.Tests": {
+      "path": "test/EmailSender.MongoDB.Tests/EmailSender.MongoDB.Tests.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.Domain.Tests": {
+      "path": "test/EmailSender.Domain.Tests/EmailSender.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.Application.Tests": {
+      "path": "test/EmailSender.Application.Tests/EmailSender.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.HttpApi.Host": {
+      "path": "host/EmailSender.HttpApi.Host/EmailSender.HttpApi.Host.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.Web": {
+      "path": "src/EmailSender.Web/EmailSender.Web.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/EmailSender.HttpApi.Client.ConsoleTestApp/EmailSender.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "EmailSender.Web.Host": {
+      "path": "host/EmailSender.Web.Host/EmailSender.Web.Host.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.AuthServer": {
+      "path": "host/EmailSender.AuthServer/EmailSender.AuthServer.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.Host.Shared": {
+      "path": "host/EmailSender.Host.Shared/EmailSender.Host.Shared.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.Web.Unified": {
+      "path": "host/EmailSender.Web.Unified/EmailSender.Web.Unified.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.Blazor": {
+      "path": "src/EmailSender.Blazor/EmailSender.Blazor.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Blazor.Host": {
+      "path": "host/EmailSender.Blazor.Host/EmailSender.Blazor.Host.abppkg",
+      "folder": "host"
+    },
+    "EmailSender.Blazor.Server": {
+      "path": "src/EmailSender.Blazor.Server/EmailSender.Blazor.Server.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Blazor.WebAssembly": {
+      "path": "src/EmailSender.Blazor.WebAssembly/EmailSender.Blazor.WebAssembly.abppkg",
+      "folder": "src"
+    },
+    "EmailSender.Blazor.Server.Host": {
+      "path": "host/EmailSender.Blazor.Server.Host/EmailSender.Blazor.Server.Host.abppkg",
+      "folder": "host"
+    }
+  }
+}

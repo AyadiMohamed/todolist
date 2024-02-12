@@ -18,7 +18,7 @@
     <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Shared" Version="8.0.2" />
     <PackageReference Include="Volo.Abp.SettingManagement.Domain.Shared" Version="8.0.2" />
     <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="8.0.2" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\EmailSender\src\EmailSender.Domain.Shared\EmailSender.Domain.Shared.csproj" /></ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\TodoList\*.json" />

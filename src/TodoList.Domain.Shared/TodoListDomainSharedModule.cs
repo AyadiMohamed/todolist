@@ -1,4 +1,4 @@
-﻿using TodoList.Localization;
+using TodoList.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
@@ -12,6 +12,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using EmailSender;
 
 namespace TodoList;
 
@@ -25,7 +26,8 @@ namespace TodoList;
     typeof(AbpSettingManagementDomainSharedModule),
     typeof(AbpTenantManagementDomainSharedModule)    
     )]
-public class TodoListDomainSharedModule : AbpModule
+[DependsOn(typeof(EmailSenderDomainSharedModule))]
+    public class TodoListDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

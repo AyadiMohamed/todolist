@@ -7,10 +7,10 @@ using TodoList.Permissions;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Identity;
 using Volo.Abp;
 using TodoList.Entities.Members;
 using System.Collections.Generic;
+using EmailSender.EmailSender;
 
 
 
@@ -27,9 +27,16 @@ namespace TodoList.Tasks
 
     {
         private IRepository<Member, Guid> _memberRepository;
-        public TaskApplicationService(IRepository<task, Guid> repository, IRepository<Member, Guid> memberRepository) : base(repository)
+        private readonly EmailSendingService _emailSender;
+
+
+        public TaskApplicationService(
+            IRepository<task, Guid> repository,
+            IRepository<Member, Guid> memberRepository, EmailSendingService emailSender
+           ) : base(repository)
         {
             _memberRepository = memberRepository;
+            _emailSender = emailSender;
         }
 
         #region GetAsync
@@ -82,6 +89,8 @@ namespace TodoList.Tasks
                     throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
 
                 input.SetUserId(member.UserId);
+                await _emailSender.SendEmailAsync(member.MemberEmail, "New Task Created", "A new task has been created.");
+
             }
         }
         /// <summary>
