@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TodoList.Permissions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
@@ -50,17 +49,16 @@ namespace TodoList.Data
 
                 var permissionNames = new List<string>
                 {
-                    // Add your TodoList permission names here
-                    TodoListPermissions.TodoListTasks.Default,
-                    TodoListPermissions.TodoListTasks.Create,
-                    TodoListPermissions.TodoListTasks.Update,
-                    TodoListPermissions.TodoListTasks.Delete,
-                    TodoListPermissions.TodoListTasks.Read,
-                    TodoListPermissions.TodoListMembers.Default,
-                    TodoListPermissions.TodoListMembers.Create,
-                    TodoListPermissions.TodoListMembers.Update,
-                    TodoListPermissions.TodoListMembers.Delete,
-                    TodoListPermissions.TodoListMembers.Read
+                    "TodoList.Tasks.Default",
+                    "TodoList.Tasks.Create",
+                    "TodoList.Tasks.Update",
+                    "TodoList.Tasks.Delete",
+                    "TodoList.Tasks.Read",
+                    "TodoList.Members.Default",
+                    "TodoList.Members.Create",
+                    "TodoList.Members.Update",
+                    "TodoList.Members.Delete",
+                    "TodoList.Members.Read"
                 };
 
                 await _permissionDataSeeder.SeedAsync(RolePermissionValueProvider.ProviderName, roleName, permissionNames);
