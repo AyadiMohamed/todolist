@@ -15,7 +15,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using EmailSender.EntityFrameworkCore;
+using System;
 
 namespace TodoList.EntityFrameworkCore;
 
@@ -88,14 +88,20 @@ public class TodoListDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-        builder.Entity<task>(b => b.ToTable("Tasks"));
+        builder.Entity<task>(b =>
+        {
+            b.ToTable("Tasks");
+            b.ConfigureByConvention();
+
+            b.HasOne<Member>().WithMany(t=>t.Task).HasForeignKey(t => t.MemberId);
+        });
         builder.Entity<Member>(b =>
         {
             b.ToTable("Members");
             b.ConfigureByConvention();
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(t => t.UserId);
-            b.HasOne<task>().WithMany().HasForeignKey(t => t.Id);
+           
         });
-        builder.ConfigureEmailSender();
-        }
+
+    }
 }

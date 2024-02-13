@@ -6,6 +6,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
+using Volo.Abp.TenantManagement;
 using Volo.Abp.Uow;
 
 namespace TodoList.Data
@@ -39,12 +40,10 @@ namespace TodoList.Data
 
         private async Task SeedUserAndRoleAsync()
         {
-            var adminRoleName = _configuration["Users:Roles:Admin:RoleName"];
-            var adminRoleExist = await _roleManager.FindByNameAsync(adminRoleName);
-            if (adminRoleExist == null)
+            var roleExist = await _roleManager.RoleExistsAsync("admin");
+            if (!roleExist)
             {
-                var adminRole = new IdentityRole(SimpleGuidGenerator.Instance.Create(), adminRoleName);
-                await _roleManager.CreateAsync(adminRole);
+                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin"));
             }
 
             var defaultUserEmail = _configuration["Users:DefaultUser:Email"];
@@ -56,12 +55,15 @@ namespace TodoList.Data
                     var defaultUserPassword = _configuration["Users:DefaultUser:Password"];
                     var defaultUserName = _configuration["Users:DefaultUser:Name"];
 
-                    var defaultUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), defaultUserEmail, defaultUserEmail);
-                    await _userManager.CreateAsync(defaultUser, defaultUserPassword);
-                    await _userManager.AddToRoleAsync(defaultUser, adminRoleName);
-
-                    var defaultUserMember = new Member(defaultUserName, defaultUserEmail, defaultUser.Id);
-                    await _memberRepository.InsertAsync(defaultUserMember);
+                    var defaultUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), defaultUserName, defaultUserEmail);
+                    var result =await _userManager.CreateAsync(defaultUser, defaultUserPassword);
+                    await _userManager.AddToRoleAsync(defaultUser, "admin");
+                    if (result.Succeeded)
+                    {
+                        var defaultUserMember = new Member(SimpleGuidGenerator.Instance.Create(), defaultUserName, defaultUserEmail, defaultUser.Id);
+                        await _memberRepository.InsertAsync(defaultUserMember);
+                    }
+                  
                 }
             }
 
@@ -74,12 +76,14 @@ namespace TodoList.Data
                     var secondUserPassword = _configuration["Users:SecondUser:Password"];
                     var secondUserName = _configuration["Users:SecondUser:Name"];
 
-                    var secondUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), secondUserEmail, secondUserEmail);
-                    await _userManager.CreateAsync(secondUser, secondUserPassword);
-                    await _userManager.AddToRoleAsync(secondUser, adminRoleName);
-
-                    var secondUserMember = new Member(secondUserName, secondUserEmail, secondUser.Id);
-                    await _memberRepository.InsertAsync(secondUserMember);
+                    var secondUser = new IdentityUser(SimpleGuidGenerator.Instance.Create(), secondUserName, secondUserEmail);
+                    var result = await _userManager.CreateAsync(secondUser, secondUserPassword);
+                    await _userManager.AddToRoleAsync(secondUser, "admin");
+                    if (result.Succeeded) {
+                        var secondUserMember = new Member(SimpleGuidGenerator.Instance.Create(), secondUserName, secondUserEmail, secondUser.Id);
+                        await _memberRepository.InsertAsync(secondUserMember);
+                    }
+                    
                 }
             }
         }

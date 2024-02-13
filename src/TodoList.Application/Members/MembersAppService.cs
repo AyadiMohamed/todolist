@@ -11,6 +11,7 @@ using Volo.Abp;
 using TodoList.Entities.Members;
 using System.Linq;
 using System.Collections.Generic;
+using Volo.Abp.Guids;
 
 namespace TodoList.Members
 {
@@ -62,14 +63,14 @@ namespace TodoList.Members
             if (member != null)
                 throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_MEMBER_ALREADY_EXIST);
             //create user
-            var user = new IdentityUser(GuidGenerator.Create(), input.MemberName, input.MemberEmail);
+            var user = new IdentityUser(SimpleGuidGenerator.Instance.Create(), input.MemberName, input.MemberEmail);
             var createUserResult = await _userManager.CreateAsync(user);
             if (!createUserResult.Succeeded)
                 throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_MEMBER_ALREADY_EXIST + string.Join(", ", createUserResult.Errors.Select(e => e.Code)));
             //Role
             var roleExist = await _roleManager.RoleExistsAsync(TodoListConsts.MemberRole);
             if (!roleExist)
-                await _roleManager.CreateAsync(new IdentityRole(GuidGenerator.Create(), TodoListConsts.MemberRole, this.CurrentTenant.Id));
+                await _roleManager.CreateAsync(new IdentityRole(GuidGenerator.Create(), TodoListConsts.MemberRole));
 
             await _userManager.AddToRoleAsync(user, TodoListConsts.MemberRole);
             await _userManager.AddPasswordAsync(user, TodoListConsts.MemberPassword);
@@ -99,10 +100,11 @@ namespace TodoList.Members
         /// <returns>Guid : Member </returns>
         private async Task<Member> BeforeUpdateAsync(UpdateMemberDto input)
         {
-            // member existins verfication
-            var member = await this.Repository.FirstOrDefaultAsync(m => m.MemberName == input.MemberName);
+            // member existins verficationv
+            var id = input.Id;
+            var member = await this.Repository.FindAsync(m => m.Id == id);
             if (member == null)
-                throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND, input.Id.ToString());
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND, input.Id.ToString()));
             return member;
         }
         /// <summary>
@@ -164,7 +166,11 @@ namespace TodoList.Members
         {
             var member =await this.BeforeDeleteAsync(id);
             await base.DeleteAsync(id);
-            await this.AfterDeleteAsync(member.UserId);
+            if (member.UserId.HasValue)
+            {
+                await this.AfterDeleteAsync((Guid)member.UserId);
+
+            }
         }
         ///<summary>
         /// AfterDeleteAsync :Handel the needed operation after deleting the member 

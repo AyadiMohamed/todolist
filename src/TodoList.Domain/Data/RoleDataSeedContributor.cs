@@ -38,7 +38,7 @@ namespace TodoList.Data
             var adminRoleExist = await _roleManager.RoleExistsAsync("admin");
             if (!adminRoleExist)
             {
-                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin", context.TenantId));
+                await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), "admin"));
             }
             // member role 
             var roleName = _configuration.GetSection("Roles:Member")["RoleName"];
@@ -47,7 +47,7 @@ namespace TodoList.Data
                 var roleExist = await _roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), roleName, context.TenantId));
+                    await _roleManager.CreateAsync(new IdentityRole(SimpleGuidGenerator.Instance.Create(), roleName));
                 }
             }
 

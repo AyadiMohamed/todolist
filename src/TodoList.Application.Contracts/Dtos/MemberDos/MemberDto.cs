@@ -7,6 +7,7 @@ namespace TodoList.Dtos.MemberDos
 {
     public class MemberDto : EntityDto<Guid>
     {
+        public Guid Id { get; set; }
         public string MemberName { get; set; }
         public string MemberEmail { get; set; }
         public Guid UserId { get; set; }

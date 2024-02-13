@@ -88,8 +88,8 @@ namespace TodoList.Tasks
                 if (member == null)
                     throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
 
-                input.SetUserId(member.UserId);
-                await _emailSender.SendEmailAsync(member.MemberEmail, "New Task Created", "A new task has been created.");
+                input.SetUserId((Guid)member.UserId);
+                await _emailSender.SendEmailAsync(/*member.MemberEmail, "New Task Created", "A new task has been created."*/);
 
             }
         }

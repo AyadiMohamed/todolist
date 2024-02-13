@@ -10,16 +10,22 @@ namespace TodoList.Entities.Members
 {
     public class Member : FullAuditedAggregateRoot<Guid>
     {
+   
         public string MemberName { get; set; }
         public string MemberEmail { get; set; }
-        public Guid UserId { get; set; }
-        public ICollection<task> Task { get; set; }
+        public Guid? UserId { get; set; }
+        public ICollection<task>? Task { get; set; } = new List<task>();
 
-        public Member(string memberName, string memberEmail, Guid userId)
+        public Member(Guid id , string memberName, string memberEmail, Guid? userId)
         {
+            Id = id;
             MemberName = memberName;
             MemberEmail = memberEmail;
-            UserId = userId;
+            if(userId != null )
+            {
+                UserId = userId;
+            }
+            
   
         }
     }
