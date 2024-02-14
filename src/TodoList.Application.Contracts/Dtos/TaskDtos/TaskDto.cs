@@ -13,8 +13,11 @@ namespace TodoList.Dtos.TaskDtos
         public string Description { get; set; }
         public DateTime DueDate { get; set; }
         public bool Completed { get; set; }
-        public Guid UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserEmail { get; set; }
+
+        public Guid MemberId { get; set; }
+        public string? MemberName { get; set; }
+
+        public TaskDto() { }
+
     }
 }

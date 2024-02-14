@@ -11,6 +11,7 @@ using Volo.Abp;
 using TodoList.Entities.Members;
 using System.Collections.Generic;
 using EmailSender.EmailSender;
+using System.Threading;
 
 
 
@@ -27,7 +28,7 @@ namespace TodoList.Tasks
 
     {
         private IRepository<Member, Guid> _memberRepository;
-        private readonly EmailSendingService _emailSender;
+        private EmailSendingService _emailSender;
 
 
         public TaskApplicationService(
@@ -43,12 +44,15 @@ namespace TodoList.Tasks
         [Authorize(TodoListPermissions.TodoListTasks.Read)]
         public override async Task<TaskDto> GetAsync(Guid id)
         {
-            var entity = await this.Repository.GetAsync(id);
-            if (entity == null)
-                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND), id.ToString());
+            var entity = await this.Repository.GetAsync(id, true);
+            if(entity == null)
+            {
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND),id.ToString());
+            }
             var result = await MapToGetOutputDtoAsync(entity);
             return result;
         }
+
         #endregion
 
         #region GetListAsync
@@ -64,40 +68,28 @@ namespace TodoList.Tasks
             }
             return new PagedResultDto<TaskDtoListing>(totalCount, entityDtos);
         }
+        
+
         #endregion
 
-        #region CreateTask
-        /// <summary>
-        /// BeforeCreateAsync : Handling the verification before creating new task
-        /// and creating the user related to that task
-        /// </summary>
+        #region CreateAsync
         private async Task BeforeCreateAsync(CreateTaskDto input)
         {
-            //memberId verification
-            if (!input.MemberId.HasValue)
+            if(input.AssignedTo != this.CurrentUser.Id)
             {
-                input.MemberId = this.CurrentUser.Id;
-            }
-            else
-            {
-                //role verification
                 if (!this.CurrentUser.IsInRole(TodoListConsts.AdminRole))
+                {
                     throw new UserFriendlyException(TodoListDomainErrorCodes.TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER);
-                // member verfication
-                var member = await _memberRepository.FirstOrDefaultAsync(x => x.UserId == input.MemberId);
-                if (member == null)
-                    throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
-
-                input.SetUserId((Guid)member.UserId);
-                await _emailSender.SendEmailAsync(/*member.MemberEmail, "New Task Created", "A new task has been created."*/);
-
+                }
             }
+            var member = await _memberRepository.FirstOrDefaultAsync(x => x.UserId == input.AssignedTo);
+            if(member == null)
+            {
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND, input.AssignedTo));
+            }
+            await _emailSender.SendEmailAsync(/*member.MemberEmail, "New Task Created", "A new task has been created."*/);
+            input.SetMemberId(member.Id);
         }
-        /// <summary>
-        /// CreateAsync :Handel the creation of the task and calls the befor and after function
-        /// </summary>
-        /// <param name="input" >CreateTaskDto</param>
-        /// <returns></returns>
         [Authorize(TodoListPermissions.TodoListTasks.Create)]
         public override async Task<TaskDto> CreateAsync(CreateTaskDto input)
         {
@@ -105,31 +97,18 @@ namespace TodoList.Tasks
             var result = await base.CreateAsync(input);
             return result;
         }
-
         #endregion
-
-        #region UpdateAsyn
-        /// <summary>
-        /// BeforeUpdateAsync :Handel the verification need before updating a task
-        /// </summary>
-        /// <param name="input">UpdateTaskDto</param>
-        /// <returns>task: the exsiting task in database </returns>
+        [Authorize(TodoListPermissions.TodoListTasks.Update)]
+        #region UpdateAsync
         private async Task BeforeUpdateAsync(UpdateTaskDto input)
         {
-            // member verfication
-            var member = await _memberRepository.FirstOrDefaultAsync(x => x.UserId == input.MemberId);
-            if (member == null)
-                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND), input.Id.ToString());
-
+            var task = await this.Repository.FindAsync(t => t.Id == input.Id);
+            if(task == null)
+            {
+                throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_TASK_WITH_ID_NOT_FOUND, input.Id));
+                    
+            }
         }
-
-        /// <summary>
-        /// UpdateAsync :Handel the update of the task and calls the befor and after function
-        /// </summary>
-        /// <param name="id" >Guid:task Id</param>
-        /// <param name="input" >UpdateTaskDto</param>
-        /// <returns>taskDto</returns>
-        [Authorize(TodoListPermissions.TodoListTasks.Update)]
         public override async Task<TaskDto> UpdateAsync(Guid id, UpdateTaskDto input)
         {
             await this.BeforeUpdateAsync(input);
@@ -137,7 +116,6 @@ namespace TodoList.Tasks
             return result;
         }
         #endregion
-
         #region Delete
         /// <summary>
         /// BeforeDeleteAsync :Handel the verification need before deleting a task
@@ -181,6 +159,7 @@ namespace TodoList.Tasks
         }
         #endregion
 
-
     }
+
+
 }

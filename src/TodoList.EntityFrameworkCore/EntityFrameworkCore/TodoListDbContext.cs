@@ -93,7 +93,7 @@ public class TodoListDbContext :
             b.ToTable("Tasks");
             b.ConfigureByConvention();
 
-            b.HasOne<Member>().WithMany(t=>t.Task).HasForeignKey(t => t.MemberId);
+            b.HasOne(t => t.Member).WithMany(t=>t.Task).HasForeignKey(t => t.MemberId);
         });
         builder.Entity<Member>(b =>
         {

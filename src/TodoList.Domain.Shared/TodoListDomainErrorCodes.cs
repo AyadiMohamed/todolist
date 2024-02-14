@@ -10,9 +10,9 @@ public static class TodoListDomainErrorCodes
     #endregion
 
     #region Tasks
-    public const string TODOLIST_TASK_WITH_ID_NOT_FOUND = "The Absence Slip with Id {0} does not exist";
-    public const string TODOLIST_TASK_CREATION_FAILED = "The Member creation process failed for the following reasons: ";
-    public const string TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER = "The Member creation process failed for the following reasons: ";
+    public const string TODOLIST_TASK_WITH_ID_NOT_FOUND = "The Task with Id {0} does not exist";
+    public const string TODOLIST_TASK_CREATION_FAILED = "The task creation process failed for the following reasons: ";
+    public const string TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER = "Cannot Assign tasks to other members ";
 
     #endregion
 

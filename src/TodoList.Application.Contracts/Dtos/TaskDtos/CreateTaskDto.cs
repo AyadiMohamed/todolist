@@ -18,21 +18,22 @@ namespace TodoList.Dtos.TaskDtos
         [Required]
         public DateTime DueDate { get; set; }
 
-        public bool Completed { get; set; }
+        public bool Completed { get; set; } = false;
+        public Guid? AssignedTo { get; set; }
+
+        public string? MemberName { get; set; }
+       
+        private Guid MemberId { get; set; }
 
 
-        private Guid UserId { get; set; }
-        public Guid? MemberId { get; set; }
-
-
-        public void SetUserId(Guid userId)
+        public void SetMemberId(Guid memberId)
         {
-            this.UserId = userId;
+            this.MemberId = memberId;
         }
 
-        public Guid GetUserId()
+        public Guid GetMemberId()
         {
-            return this.UserId;
+            return this.MemberId;
         }
 
 

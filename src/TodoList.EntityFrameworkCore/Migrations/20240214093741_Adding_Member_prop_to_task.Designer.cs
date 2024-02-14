@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoList.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -11,9 +12,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace TodoList.Migrations
 {
     [DbContext(typeof(TodoListDbContext))]
-    partial class TodoListDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240214093741_Adding_Member_prop_to_task")]
+    partial class Adding_Member_prop_to_task
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,9 +92,6 @@ namespace TodoList.Migrations
             modelBuilder.Entity("TodoList.Entities.Tasks.task", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("AssignedTo")
                         .HasColumnType("char(36)");
 
                     b.Property<bool>("Completed")

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EmailSender.EmailSender
 {
-    public class EmailSendingService 
+    public class EmailSendingService : EmailSenderAppService
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<EmailSendingService> _logger;
