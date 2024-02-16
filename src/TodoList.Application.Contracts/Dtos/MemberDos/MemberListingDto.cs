@@ -6,7 +6,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace TodoList.Dtos.MemberDos
 {
-    public class MemberListingDto : FullAuditedEntityDto<Guid>
+    public class MemberListingDto : EntityDto<Guid>
     {
         public string MemberName { get; set; }
         public string MemberEmail { get; set; }

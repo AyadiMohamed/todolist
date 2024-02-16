@@ -5,7 +5,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace TodoList.Dtos.TaskDtos
 {
-    public class TaskDtoListing : FullAuditedEntityDto<Guid>
+    public class TaskDtoListing : EntityDto<Guid>
     {
         public string Title { get; set; }
         public string Description { get; set; }

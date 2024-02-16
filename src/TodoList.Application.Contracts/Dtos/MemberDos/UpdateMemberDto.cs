@@ -6,7 +6,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace TodoList.Dtos.MemberDos
 {
-    public class UpdateMemberDto : FullAuditedEntityDto<Guid>
+    public class UpdateMemberDto : EntityDto<Guid>
     {
         [Required]
         public string MemberName { get; set; }

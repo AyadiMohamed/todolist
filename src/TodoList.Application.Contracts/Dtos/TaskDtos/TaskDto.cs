@@ -7,7 +7,7 @@ using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace TodoList.Dtos.TaskDtos
 {
-    public class TaskDto : AuditedEntityDto<Guid>
+    public class TaskDto : EntityDto<Guid>
     {
         public string Title { get; set; }
         public string Description { get; set; }
