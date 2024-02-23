@@ -101,6 +101,31 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
                 clientUri: swaggerRootUrl
             );
         }
+        // react app dev 
+        var dev_React_Local_Id = configurationSection["Dev_React_Local:ClientId"];
+        if (!dev_React_Local_Id.IsNullOrWhiteSpace())
+        {
+            var reactDevRootUrl = configurationSection["Dev_React_Local:RootUrl"]?.TrimEnd('/');
+            var redirectUrl = configurationSection["Dev_React_Local:RedirectUrl"]?.TrimEnd('/');
+
+            await CreateApplicationAsync(
+                name: dev_React_Local_Id!,
+                type: OpenIddictConstants.ClientTypes.Public,
+                consentType: OpenIddictConstants.ConsentTypes.Implicit,
+                displayName: dev_React_Local_Id,
+                secret: null,
+                grantTypes: new List<string> {
+                    OpenIddictConstants.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.GrantTypes.Password,
+                    OpenIddictConstants.GrantTypes.ClientCredentials,
+                    OpenIddictConstants.GrantTypes.RefreshToken
+                },
+                scopes: commonScopes,
+                redirectUri: redirectUrl,
+                clientUri: reactDevRootUrl,
+                postLogoutRedirectUri: reactDevRootUrl
+            );
+        }
     }
 
     private async Task CreateApplicationAsync(
