@@ -159,12 +159,7 @@ namespace TodoList.Tasks
         }
         #endregion
 
-        public async Task<string> returnString()
-        {
-            return "ok";
-        }
-
-        public async Task<string> returnTest()
+        public async Task<string> returnTest2()
         {
             return "ok";
         }
