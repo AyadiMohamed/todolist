@@ -21,21 +21,35 @@ jobs:
           dotnet-version: '8.0.x'
           include-prerelease: true
 
-      - name: Determine changed files
-        id: changed-files
-        run: |
-          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
-        
-      - name: Print changed files
-        run: echo "Changed files:" "${{ steps.changed-files.outputs.files }}"
+      - name: Determine affected projects
+        id: affected
+        uses: leonardochaia/dotnet-affected-action@v1
+        with:
+          from: 'origin/main'
+          to: '${{ github.sha }}'
+
+      - name: Print affected projects
+        run: echo "Affected projects:" `${{ steps.affected.outputs.projects }}`
 
       - name: Restore dependencies 
         run: dotnet restore
 
-      - name: Build and Publish affected files
+      - name: Build api 
         run: |
-          for file in ${{ steps.changed-files.outputs.files }}
+          for project in `${{ steps.affected.outputs.projects }}`
           do
-            dotnet build -c Release --no-restore $file
-            dotnet publish -c release -o ./out $file
+            if [[ `$project` == "src/TodoList.HttpApi.Host/*.csproj" ]]
+            then
+              dotnet build -c Release --no-restore $project
+            fi
+          done
+
+      - name: Publish api 🤏
+        run: |
+          for project in `${{ steps.affected.outputs.projects }}`
+          do
+            if [[ `$project` == "src/TodoList.HttpApi.Host/*.csproj" ]]
+            then
+              dotnet publish -c release -o ./out `$project`
+            fi
           done
