@@ -21,23 +21,21 @@ jobs:
           dotnet-version: '8.0.x'
           include-prerelease: true
 
-      - name: Determine affected projects
-        id: affected
-        uses: leonardochaia/dotnet-affected-action@v1
-        with:
-          from: 'origin/main'
-          to: '${{ github.sha }}'
-
-      - name: Print affected projects
-        run: echo 'Affected projects:' '${{ steps.affected.outputs.projects }}'
+      - name: Determine changed files
+        id: changed-files
+        run: |
+          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+        
+      - name: Print changed files
+        run: echo "Changed files:" "${{ steps.changed-files.outputs.files }}"
 
       - name: Restore dependencies 
         run: dotnet restore
 
-      - name: Build and Publish affected projects
+      - name: Build and Publish affected files
         run: |
-          for project in ${{ steps.affected.outputs.projects }}
+          for file in ${{ steps.changed-files.outputs.files }}
           do
-            dotnet build -c Release --no-restore $project
-            dotnet publish -c release -o ./out $project
+            dotnet build -c Release --no-restore $file
+            dotnet publish -c release -o ./out $file
           done
