@@ -34,8 +34,10 @@ jobs:
       - name: Restore dependencies 
         run: dotnet restore
 
-      - name: Build api 
-        run: dotnet build -c Release --no-restore src/TodoList.HttpApi.Host/*.csproj
-
-      - name: Publish api 🤏
-        run: dotnet publish -c release -o ./out src/TodoList.HttpApi.Host/*.csproj 
+      - name: Build and Publish affected projects
+        run: |
+          for project in ${{ steps.affected.outputs.projects }}
+          do
+            dotnet build -c Release --no-restore $project
+            dotnet publish -c release -o ./out $project
+          done
