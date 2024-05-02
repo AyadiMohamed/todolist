@@ -28,6 +28,9 @@ jobs:
           from: 'origin/main'
           to: '${{ github.sha }}'
 
+      - name: Print affected projects
+        run: echo 'Affected projects:' '${{ steps.affected.outputs.projects }}'
+
       - name: Restore dependencies 
         run: dotnet restore
 
