@@ -2,7 +2,7 @@
 using TodoList.Dtos.MemberDos;
 using TodoList.Dtos.TaskDtos;
 using TodoList.Entities.Members;
-using TodoList.Entities.Tasks;
+using TodoList.Models.appTasks;
 
 namespace TodoList;
 

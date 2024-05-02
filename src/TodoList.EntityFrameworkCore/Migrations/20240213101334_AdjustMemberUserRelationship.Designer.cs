@@ -1920,7 +1920,7 @@ namespace TodoList.Migrations
                         .IsRequired();
 
                     b.HasOne("TodoList.Entities.Members.Member", null)
-                        .WithMany("Task")
+                        .WithMany("Tasks")
                         .HasForeignKey("MemberId1");
                 });
 
@@ -2068,7 +2068,7 @@ namespace TodoList.Migrations
 
             modelBuilder.Entity("TodoList.Entities.Members.Member", b =>
                 {
-                    b.Navigation("Task");
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

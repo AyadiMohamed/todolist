@@ -1915,7 +1915,7 @@ namespace TodoList.Migrations
             modelBuilder.Entity("TodoList.Entities.Tasks.task", b =>
                 {
                     b.HasOne("TodoList.Entities.Members.Member", null)
-                        .WithMany("Task")
+                        .WithMany("Tasks")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2065,7 +2065,7 @@ namespace TodoList.Migrations
 
             modelBuilder.Entity("TodoList.Entities.Members.Member", b =>
                 {
-                    b.Navigation("Task");
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

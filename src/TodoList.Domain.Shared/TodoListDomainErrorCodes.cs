@@ -13,6 +13,7 @@ public static class TodoListDomainErrorCodes
     public const string TODOLIST_TASK_WITH_ID_NOT_FOUND = "The Task with Id {0} does not exist";
     public const string TODOLIST_TASK_CREATION_FAILED = "The task creation process failed for the following reasons: ";
     public const string TODOLIST_CANT_ASSIGN_TASKS_TO_OTHER = "Cannot Assign tasks to other members ";
+    public const string TODOLIST_TASK_ALREADY_EXITS = "task with Title {0} already exits";
 
     #endregion
 

@@ -1907,7 +1907,7 @@ namespace TodoList.Migrations
             modelBuilder.Entity("TodoList.Entities.Tasks.task", b =>
                 {
                     b.HasOne("TodoList.Entities.Members.Member", "Member")
-                        .WithMany("Task")
+                        .WithMany("Tasks")
                         .HasForeignKey("MemberId");
 
                     b.Navigation("Member");
@@ -2057,7 +2057,7 @@ namespace TodoList.Migrations
 
             modelBuilder.Entity("TodoList.Entities.Members.Member", b =>
                 {
-                    b.Navigation("Task");
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

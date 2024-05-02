@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using TodoList.Entities.Members;
-using TodoList.Entities.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -16,6 +15,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using System;
+using TodoList.Models.appTasks;
 
 namespace TodoList.EntityFrameworkCore;
 
@@ -93,7 +93,7 @@ public class TodoListDbContext :
             b.ToTable("Tasks");
             b.ConfigureByConvention();
 
-            b.HasOne(t => t.Member).WithMany(t=>t.Task).HasForeignKey(t => t.MemberId);
+            b.HasOne(t => t.Member).WithMany(t=>t.Tasks).HasForeignKey(t => t.MemberId);
         });
         builder.Entity<Member>(b =>
         {

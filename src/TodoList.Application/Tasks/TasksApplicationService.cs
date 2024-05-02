@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using TodoList.Dtos.TaskDtos;
-using TodoList.Entities.Tasks;
 using TodoList.Permissions;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -12,6 +11,7 @@ using TodoList.Entities.Members;
 using System.Collections.Generic;
 using EmailSender.EmailSender;
 using System.Threading;
+using TodoList.Models.Members;
 
 
 
@@ -87,7 +87,7 @@ namespace TodoList.Tasks
             {
                 throw new UserFriendlyException(string.Format(TodoListDomainErrorCodes.TODOLIST_MEMBER_WITH_ID_NOT_FOUND, input.AssignedTo));
             }
-            await _emailSender.SendEmailAsync(/*member.MemberEmail, "New Task Created", "A new task has been created."*/);
+            await _emailSender.SendEmailAsync(/*member.MemberEmail, "New Tasks Created", "A new task has been created."*/);
             input.SetMemberId(member.Id);
         }
         [Authorize(TodoListPermissions.TodoListTasks.Create)]
@@ -159,6 +159,10 @@ namespace TodoList.Tasks
         }
         #endregion
 
+        public async Task<string> returnString()
+        {
+            return "ok";
+        }
     }
 
 
